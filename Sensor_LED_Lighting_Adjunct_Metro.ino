@@ -1,17 +1,28 @@
 #include <Wire.h>
 #include <math.h>
 
+
 // Metro mini pinout
 #define I2C_SLAVE_ADDR 8
 #define REDPIN 10
 #define GREENPIN 11
 #define BLUEPIN 9
 #define WHITEPIN 3
-#define FADESPEED 800     // (microseconds) make this higher to slow down
 
+
+// Preferences
+#define FADESPEED 800     // Should match or be higher than the value on the I2C master
+                          // Value on the master controls the fade speed
+
+
+// Variables that can be modified by interrupts
 volatile int a = 0; // Brightness sent from the other controller
 
 
+/**
+ * Accept and update brightness value from I2C master
+ * Called via Wire library interrupt
+ */
 void receiveValue(int howMany)
 {
   // We're expecting two bytes (a full Arduino integer)
@@ -35,6 +46,7 @@ void receiveValue(int howMany)
   }
 }
 
+
 void setup() 
 {
   Serial.begin(9600);
@@ -52,7 +64,8 @@ void setup()
   analogWrite(GREENPIN, 0);
   analogWrite(BLUEPIN, 0);
 }
- 
+
+
 void loop() 
 {
   int r, g, b, w, lowest;
@@ -67,8 +80,8 @@ void loop()
   // blue-white   254 80  100
   // soft white   254 80  7
   r = 254; // 60 120
-  g = 80; // 25 40 
-  b = 50; // 2 15
+  g = 100; // 25 40 80
+  b = 70; // 2 15 50
   w = 254;
   lowest = 0;
  
@@ -93,7 +106,7 @@ int scale( int color, int brightness, int lowest )
   int base = 255;
 
   // Map the brightness (0-1023) into the PWM domain space (0-255)
-  // Brightness is floor'd at the lowest 
+  // Smallest value of input brightness is 'lowest'
   int m_brightness = map( brightness, lowest, 1023, 0, 255 );
   
   float scale = (float)color / (float)base;
