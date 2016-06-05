@@ -295,6 +295,8 @@ int getAmbientBrightness( int minBrightness, boolean forceCalculation )
 
   if( ambientActive )
   {
+    // Don't constantly check the ambient light value unless forced
+    // The delay prevents too many adjustments in a short period, which are uncomfortable for a user
     if( millis() % 500 == 0 || forceCalculation )
     {
       // So we can calculate a difference
@@ -302,16 +304,22 @@ int getAmbientBrightness( int minBrightness, boolean forceCalculation )
 
       int ambientVal;
       int valueCount = 20;
-      int ambValArr[valueCount];
-      
+      int ambValArr[valueCount]; // Store a list of readings that we can average to smooth reading anomalies
+
+      // Take a series of readings from the sensor
       for( int i=0; i<valueCount; i++)
       {
         ambientReading = (int)constrain(analogRead(AMBIENTPIN), 40, 250); // 20 super bright, 250+ darkness
+
+        // Flip and map the readings to the brightness scale
+        // Readings are inversely proportional to brightness (lower is brighter) on a 40-250 scale
+        // Brightness values are proportional (higher is brighter) on a 0-1023 scale
         ambientVal     = map( (int)ambientReading, 40, 250, 1023, minBrightness ); // Blue (at 7) becomes unstable below 150   
 
         ambValArr[i] = ambientVal;
       }
 
+      // Sum all the readings together (first step of average calculation)
       int avg_sum = 0;
       for( int i=0; i<valueCount; i++)
       {
@@ -319,7 +327,6 @@ int getAmbientBrightness( int minBrightness, boolean forceCalculation )
       }
 
       // Calculate the avg of the test period
-      // Determine whether to change the effective output, based on stepThreshold
       ambientValue = (int)(avg_sum / valueCount);
 
       // Don't get stuck just over min
@@ -335,7 +342,8 @@ int getAmbientBrightness( int minBrightness, boolean forceCalculation )
       {
         ambientValue = 1023;
       }
-
+      
+      // Determine whether to change the effective output, based on stepThreshold
       else
       {
         ambientValue = abs(ambientValue - oldAmbient) > stepThreshold ? ambientValue : oldAmbient;
