@@ -114,7 +114,7 @@ void loop()
   static int           offButtonBrightness      = 127; // Start with the button on full
   static int           ambientButtonBrightness  = 127; // Start with the button on full
   int                  maxBrightness            = 0;  // Adjusts based on ambient sensor settings
-  int                  minBrightness            = 20; // Minimum calculated brightness on 0-1022 scale
+  int                  minBrightness            = 100; // Minimum calculated brightness on 0-1022 scale
   int                  lowest                   = 0; // Minimum for final getBrightness function
   
 
