@@ -11,7 +11,7 @@
 
 
 // Preferences
-#define FADESPEED 800     // Should match or be higher than the value on the I2C master
+#define FADESPEED 100     // Should match or be higher than the value on the I2C master
                           // Value on the master controls the fade speed
 
 
@@ -63,6 +63,12 @@ void setup()
   analogWrite(REDPIN, 0);
   analogWrite(GREENPIN, 0);
   analogWrite(BLUEPIN, 0);
+
+  // Adjust PWM timing (speed it up)
+  // http://forum.arduino.cc/index.php?topic=41677.0
+  // http://playground.arduino.cc/Main/TimerPWMCheatsheet
+  TCCR1B = TCCR1B & 0b11111000 | 0x02;
+  TCCR2B = TCCR2B & 0b11111000 | 0x02;
 }
 
 
@@ -79,9 +85,9 @@ void loop()
   // cyan         0   254 254
   // blue-white   254 80  100
   // soft white   254 80  7
-  r = 254; // 60 120
-  g = 140; // 25 40 80
-  b = 70; // 2 15 50
+  r = 254; // 60 120 254
+  g = 170; // 25 40 80 135
+  b = 70; // 2 15 50 70
   w = 254;
   lowest = 0;
  
