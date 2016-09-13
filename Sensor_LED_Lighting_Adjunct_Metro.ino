@@ -67,8 +67,8 @@ void setup()
   // Adjust PWM timing (speed it up)
   // http://forum.arduino.cc/index.php?topic=41677.0
   // http://playground.arduino.cc/Main/TimerPWMCheatsheet
-  TCCR1B = TCCR1B & 0b11111000 | 0x02;
-  TCCR2B = TCCR2B & 0b11111000 | 0x02;
+  TCCR1B = TCCR1B & 0b11111000 | 0x01;
+  TCCR2B = TCCR2B & 0b11111000 | 0x01;
 }
 
 
